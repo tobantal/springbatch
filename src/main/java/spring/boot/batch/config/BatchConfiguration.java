@@ -15,8 +15,8 @@ import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.core.io.ClassPathResource;
 
-import spring.boot.batch.ProductPagingAndSortingRepository;
 import spring.boot.batch.model.Product;
+import spring.boot.batch.repository.ProductPagingAndSortingRepository;
 import spring.boot.batch.util.StringHeaderWriter;
 
 //@Configuration

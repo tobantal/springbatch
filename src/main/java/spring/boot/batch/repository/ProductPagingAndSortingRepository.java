@@ -1,4 +1,4 @@
-package spring.boot.batch;
+package spring.boot.batch.repository;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
