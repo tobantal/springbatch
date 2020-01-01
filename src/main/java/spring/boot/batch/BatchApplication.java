@@ -22,13 +22,12 @@ public class BatchApplication {
 	// generate and save data
     ProductPagingAndSortingRepository repository = ctx.getBean(ProductPagingAndSortingRepository.class);
 
-    for(long j = 0; j < 3_000_000L; j += 1_000_000L) {
-        long count = 105_000L;
+    long count = 100_000L;
+    for(long j = 0; j < 400_000L; j += count) {
         List<Product> products = new ArrayList<>((int)count);
-        int gcCounter = 0;
         String description = "DESCRIPTION";
-        for(long i = 5000L; i < count; i++) {
-            products.add(new Product(i, String.format("Product-%d", i), description, 1234.5));
+        for(long i = 0L; i < count; i++) {
+            products.add(new Product(j+i, String.format("Product-%d", j+i), description, 1234.5));
         }
         repository.saveAll(products);
 
