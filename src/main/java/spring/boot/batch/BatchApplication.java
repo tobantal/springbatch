@@ -24,8 +24,18 @@ public class BatchApplication {
 
     long count = 105_000L;
     List<Product> products = new ArrayList<>((int)count);
+    int gcCounter = 0;
+    String description = "DESCRIPTION";
     for(long i = 5000L; i < count; i++) {
-		products.add(new Product(i, String.format("Product-%d", i), new java.util.Date().toString(), 1234.5));
+		products.add(new Product(i, String.format("Product-%d", i), description, 1234.5));
+        if(++gcCounter%100_000==0) {
+            System.gc();
+            try {
+                Thread.sleep(3_000L);
+            } catch(InterruptedException ie) {
+
+            }
+        }
     }
     repository.saveAll(products);
 
