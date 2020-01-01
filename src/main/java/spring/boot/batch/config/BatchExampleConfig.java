@@ -47,7 +47,7 @@ public class BatchExampleConfig {
     public DataSource dataSource;
 
     @Bean
-    public FlatFileItemReader<Product> reader1() {
+    public FlatFileItemReader<Product> readerCsv() {
         FlatFileItemReader<Product> reader = new FlatFileItemReader<>();
         reader.setResource(new ClassPathResource("import.csv"));
         reader.setLineMapper(new DefaultLineMapper<Product>() {{
@@ -69,7 +69,7 @@ public class BatchExampleConfig {
      */
 
     @Bean
-    public JdbcCursorItemReader<Product> reader() {
+    public JdbcCursorItemReader<Product> readerDB() {
         JdbcCursorItemReader<Product> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql("SELECT * FROM products");
@@ -82,11 +82,11 @@ public class BatchExampleConfig {
         return person -> person;
     }
 
-    // @Bean
-    public JdbcBatchItemWriter<Product> writer() {
+    @Bean
+    public JdbcBatchItemWriter<Product> writerDB() {
         JdbcBatchItemWriter<Product> writer = new JdbcBatchItemWriter<>();
         writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-        writer.setSql("INSERT INTO products2 " +
+        writer.setSql("INSERT INTO products " +
                 "(product_id, name, description, price) " +
                 "VALUES (:id, :name, :description, :price)");
         writer.setDataSource(dataSource);
@@ -97,30 +97,42 @@ public class BatchExampleConfig {
     public Step step1() {
         return stepBuilderFactory.get("step1")
                 .<Product, Product>chunk(10)
-                .reader(reader())
+                .reader(readerCsv())
                 .processor(processor())
-                .writer(databaseCsvItemWriter())
+                .writer(writerDB())
                 .build();
     }
 
     @Bean
-    public Job importUserJob() {
-        return jobBuilderFactory.get("importProductsJob")
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
+                .<Product, Product>chunk(10)
+                .reader(readerDB())
+                .processor(processor())
+                .writer(writerCsv())
+                .build();
+    }
+
+    @Bean
+    public Job mainJob() {
+        return jobBuilderFactory.get("importProductsJob") // AppConstants.JOB_NAME_DEFERRAL
                 .incrementer(new RunIdIncrementer())
-                .flow(step1())
+		.flow(step1())
+		.on("COMPLETED").to(step2())
+		.on("FAILED").fail()
                 .end()
                 .build();
     }
 
     @Bean
-    ItemWriter<Product> databaseCsvItemWriter() {
+    ItemWriter<Product> writerCsv() {
         FlatFileItemWriter<Product> csvFileWriter = new FlatFileItemWriter<>();
 
-        String exportFileHeader = "NAME;EMAIL_ADDRESS;PACKAGE";
+        String exportFileHeader = String.format("REPORT\nDATE:%s\nNAME,DESCRIPTION,PRICE", new java.util.Date());
         StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
         csvFileWriter.setHeaderCallback(headerWriter);
 
-        String exportFilePath = "/tmp/students.csv";
+        String exportFilePath = "products-export.csv";
         csvFileWriter.setResource(new FileSystemResource(exportFilePath));
 
         LineAggregator<Product> lineAggregator = createStudentLineAggregator();
@@ -131,7 +143,7 @@ public class BatchExampleConfig {
 
     private LineAggregator<Product> createStudentLineAggregator() {
         DelimitedLineAggregator<Product> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(";");
+        lineAggregator.setDelimiter(",");
 
         FieldExtractor<Product> fieldExtractor = createStudentFieldExtractor();
         lineAggregator.setFieldExtractor(fieldExtractor);
@@ -148,13 +160,11 @@ public class BatchExampleConfig {
 }
 
 class UserRowMapper implements RowMapper<Product> {
-
     @Override
     public Product mapRow(ResultSet res, int rowNum) throws SQLException {
-        Product p = new Product(res.getLong("id"), res.getString("name"), res.getString("description"),
+        Product p = new Product(res.getLong("product_id"), res.getString("name"), res.getString("description"),
                 res.getDouble("price"));
-        System.out.println("################## Product ################### :" + p.getName());
+        //System.out.println("################## Product ################### :" + p.getName());
         return p;
     }
-
 }
