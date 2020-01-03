@@ -53,6 +53,7 @@ public class BatchExampleConfig {
         reader.setLineMapper(new DefaultLineMapper<Product>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
                 setNames(new String[]{"id", "name", "description", "price"});
+                setDelimiter(";");
             }});
             setFieldSetMapper(new BeanWrapperFieldSetMapper<Product>() {{
                 setTargetType(Product.class);
@@ -73,7 +74,7 @@ public class BatchExampleConfig {
         JdbcCursorItemReader<Product> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql("SELECT * FROM products");
-        reader.setRowMapper(new UserRowMapper());
+        reader.setRowMapper(new ProductRowMapper());
         return reader;
     }
 
@@ -128,7 +129,7 @@ public class BatchExampleConfig {
     ItemWriter<Product> writerCsv() {
         FlatFileItemWriter<Product> csvFileWriter = new FlatFileItemWriter<>();
 
-        String exportFileHeader = String.format("REPORT\nDATE:%s\nNAME,DESCRIPTION,PRICE", new java.util.Date());
+        String exportFileHeader = String.format("REPORT\nDATE:%s\nID;NAME;DESCRIPTION;PRICE", new java.util.Date());
         StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
         csvFileWriter.setHeaderCallback(headerWriter);
 
@@ -143,7 +144,7 @@ public class BatchExampleConfig {
 
     private LineAggregator<Product> createStudentLineAggregator() {
         DelimitedLineAggregator<Product> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(",");
+        lineAggregator.setDelimiter(";");
 
         FieldExtractor<Product> fieldExtractor = createStudentFieldExtractor();
         lineAggregator.setFieldExtractor(fieldExtractor);
@@ -153,13 +154,13 @@ public class BatchExampleConfig {
 
     private FieldExtractor<Product> createStudentFieldExtractor() {
         BeanWrapperFieldExtractor<Product> extractor = new BeanWrapperFieldExtractor<>();
-        extractor.setNames(new String[] { "name", "description", "price" });
+        extractor.setNames(new String[] { "id", "name", "description", "price" });
         return extractor;
     }
 
 }
 
-class UserRowMapper implements RowMapper<Product> {
+class ProductRowMapper implements RowMapper<Product> {
     @Override
     public Product mapRow(ResultSet res, int rowNum) throws SQLException {
         Product p = new Product(res.getLong("product_id"), res.getString("name"), res.getString("description"),
