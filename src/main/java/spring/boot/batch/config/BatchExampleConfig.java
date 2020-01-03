@@ -85,7 +85,7 @@ public class BatchExampleConfig {
 
     @Bean
     public JdbcBatchItemWriter<Product> writerDB() {
-        JdbcBatchItemWriter<Product> writer = new JdbcBatchItemWriter<>();
+        JdbcBatchItemWriter<Product> writer = new JdbcBatchItemWriterWrapper();
         writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
         writer.setSql("INSERT INTO products " +
                 "(product_id, name, description, price) " +
@@ -97,7 +97,7 @@ public class BatchExampleConfig {
     @Bean
     public Step step1() {
         return stepBuilderFactory.get("step1")
-                .<Product, Product>chunk(10)
+                .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(processor())
                 .writer(writerDB())
