@@ -19,9 +19,16 @@ public class BatchApplication {
 	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(BatchApplication.class, args);
 
-	// generate and save data
-    ProductPagingAndSortingRepository repository = ctx.getBean(ProductPagingAndSortingRepository.class);
+    //generateFakeData(ctx);
 
+    ImportService importService = ctx.getBean(ImportService.class);
+    importService.start();
+
+    System.exit(SpringApplication.exit(ctx));
+    }
+    
+    private static void generateFakeData(ConfigurableApplicationContext ctx) {
+        ProductPagingAndSortingRepository repository = ctx.getBean(ProductPagingAndSortingRepository.class);
     long count = 100_000L;
     for(long j = 0; j < 400_000L; j += count) {
         List<Product> products = new ArrayList<>((int)count);
@@ -39,10 +46,5 @@ public class BatchApplication {
         }
     }
 
-    ImportService importService = ctx.getBean(ImportService.class);
-    importService.start();
-
-    System.exit(SpringApplication.exit(ctx));
-	}
-
+}
 }
