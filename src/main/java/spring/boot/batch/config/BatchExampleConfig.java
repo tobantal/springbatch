@@ -73,7 +73,7 @@ public class BatchExampleConfig {
     public JdbcCursorItemReader<Product> readerDB() {
         JdbcCursorItemReader<Product> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
-        reader.setSql("SELECT * FROM products");
+        reader.setSql("SELECT * FROM products where product_id >= 0");
         reader.setRowMapper(new ProductRowMapper());
         return reader;
     }
