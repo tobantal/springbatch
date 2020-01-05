@@ -37,6 +37,7 @@ import spring.boot.batch.model.Product;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.util.StringHeaderWriter;
 import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
+import spring.boot.batch.writer.CsvWriter;
 
 @Configuration
 public class BatchExampleConfig {
@@ -52,6 +53,9 @@ public class BatchExampleConfig {
 
     //@Autowired
     //public JdbcReader jdbcReader;
+
+    @Autowired
+    public CsvWriter csvWriter;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -120,12 +124,12 @@ public class BatchExampleConfig {
                 .<Product, Product>chunk(10)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
-                .writer(writerCsv())
+                .writer(csvWriter)
                 .build();
     }
 
     @Bean
-    public Job mainJob(DataSource dataSource) {
+    public Job mainJob(DataSource dataSource, CsvWriter csvWriter) {
         return jobBuilderFactory.get("MAIN_JOB") // AppConstants.JOB_NAME_DEFERRAL
                 .incrementer(new RunIdIncrementer())
 		.flow(step1(dataSource))
@@ -134,38 +138,10 @@ public class BatchExampleConfig {
                 .end()
                 .build();
     }
-
+/*
     @Bean
-    ItemWriter<Product> writerCsv() {
-        FlatFileItemWriter<Product> csvFileWriter = new FlatFileItemWriter<>();
-
-        String exportFileHeader = String.format("REPORT\nDATE:%s\nID;NAME;DESCRIPTION;PRICE", new java.util.Date());
-        StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
-        csvFileWriter.setHeaderCallback(headerWriter);
-
-        String exportFilePath = "products-export.csv";
-        csvFileWriter.setResource(new FileSystemResource(exportFilePath));
-
-        LineAggregator<Product> lineAggregator = createLineAggregator();
-        csvFileWriter.setLineAggregator(lineAggregator);
-
-        return csvFileWriter;
+    ItemWriter<Product> writerCsv(CsvWriter csvWriter) {
+        return csvWriter;
     }
-
-    private LineAggregator<Product> createLineAggregator() {
-        DelimitedLineAggregator<Product> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(";");
-
-        FieldExtractor<Product> fieldExtractor = createFieldExtractor();
-        lineAggregator.setFieldExtractor(fieldExtractor);
-
-        return lineAggregator;
-    }
-
-    private FieldExtractor<Product> createFieldExtractor() {
-        BeanWrapperFieldExtractor<Product> extractor = new BeanWrapperFieldExtractor<>();
-        extractor.setNames(new String[] { "id", "name", "description", "price" });
-        return extractor;
-    }
-
+*/
 }
