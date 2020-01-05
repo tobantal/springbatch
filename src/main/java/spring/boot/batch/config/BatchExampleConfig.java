@@ -1,5 +1,7 @@
 package spring.boot.batch.config;
 
+import java.util.UUID;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
@@ -31,10 +34,8 @@ public class BatchExampleConfig {
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
 
-    //@Autowired
-    //public DataSource dataSource;
-
-    @Autowired public JdbcReader jdbcReader;
+    @Autowired
+    public JdbcReader jdbcReader;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -59,7 +60,7 @@ public class BatchExampleConfig {
 
     @Bean
     public Step step1(DataSource dataSource) {
-        return stepBuilderFactory.get("Csv-to-Db")
+        return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor())
@@ -69,8 +70,8 @@ public class BatchExampleConfig {
 
     @Bean
     public Step step2(DataSource dataSource) {
-        return stepBuilderFactory.get("Db-to-Csv")
-                .<Product, Product>chunk(10)
+        return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
+                .<Product, Product>chunk(100)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
                 .writer(new CsvWriter("products-export.csv"))
@@ -79,11 +80,11 @@ public class BatchExampleConfig {
 
     @Bean
     public Job mainJob(DataSource dataSource) {
-        return jobBuilderFactory.get("MAIN_JOB") // AppConstants.JOB_NAME_DEFERRAL
+        return jobBuilderFactory.get("JOB: " + UUID.randomUUID().toString())
                 .incrementer(new RunIdIncrementer())
 		.flow(step1(dataSource))
-		.on("COMPLETED").to(step2(dataSource))
-		.on("FAILED").fail()
+		.on(AppConstants.STEP_COMPLETED).to(step2(dataSource))
+		.on(AppConstants.STEP_FAILED).fail()
                 .end()
                 .build();
     }
