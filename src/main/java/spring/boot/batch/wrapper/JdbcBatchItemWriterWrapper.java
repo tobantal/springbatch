@@ -1,4 +1,4 @@
-package spring.boot.batch.config;
+package spring.boot.batch.wrapper;
 
 import java.util.List;
 
@@ -26,7 +26,6 @@ public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
 	@Override
 	public void write(List<? extends Product> items) throws Exception {
-        // TODO Auto-generated method stub
         System.out.println(">>>>> " + this.getClass().toGenericString() + ".write(..)[" +(chunks++) +"]");
         super.write(items);
     }

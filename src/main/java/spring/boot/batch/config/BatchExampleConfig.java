@@ -31,8 +31,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.core.RowMapper;
 
+import spring.boot.batch.mapper.ProductRowMapper;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
+import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
 
 @Configuration
 public class BatchExampleConfig {
@@ -158,14 +160,4 @@ public class BatchExampleConfig {
         return extractor;
     }
 
-}
-
-class ProductRowMapper implements RowMapper<Product> {
-    @Override
-    public Product mapRow(ResultSet res, int rowNum) throws SQLException {
-        Product p = new Product(res.getLong("product_id"), res.getString("name"), res.getString("description"),
-                res.getDouble("price"));
-        //System.out.println("################## Product ################### :" + p.getName());
-        return p;
-    }
 }
