@@ -8,23 +8,18 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import spring.boot.batch.model.Product;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
-import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
 import spring.boot.batch.writer.CsvWriter;
+import spring.boot.batch.writer.JdbcWriter;
 
 @Configuration
 public class BatchExampleConfig {
@@ -47,7 +42,7 @@ public class BatchExampleConfig {
 
     @Bean
     public JdbcCursorItemReader<Product> readerDB(DataSource dataSource) {
-        return jdbcReader;
+        return new JdbcReader(dataSource);
     }
 
     @Bean
@@ -57,13 +52,7 @@ public class BatchExampleConfig {
 
     @Bean
     public JdbcBatchItemWriter<Product> writerDB(DataSource dataSource) {
-        JdbcBatchItemWriter<Product> writer = new JdbcBatchItemWriterWrapper();
-        writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-        writer.setSql("INSERT INTO products " +
-                "(product_id, name, description, price) " +
-                "VALUES (:id, :name, :description, :price)");
-        writer.setDataSource(dataSource);
-        return writer;
+        return new JdbcWriter(dataSource);
     }
 
     @Bean

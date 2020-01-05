@@ -6,12 +6,10 @@ import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.stereotype.Component;
 
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
 
-//@Component
 public class CsvWriter extends FlatFileItemWriter<Product> {
 
     public CsvWriter(String exportFilePath) {
