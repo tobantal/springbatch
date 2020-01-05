@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import spring.boot.batch.model.Product;
+import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
 import spring.boot.batch.writer.CsvWriter;
@@ -39,22 +40,9 @@ public class BatchExampleConfig {
 
     @Autowired public JdbcReader jdbcReader;
 
-    //@Autowired public CsvWriter csvWriter;
-
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
-        FlatFileItemReader<Product> reader = new FlatFileItemReader<>();
-        reader.setResource(new ClassPathResource("import.csv"));
-        reader.setLineMapper(new DefaultLineMapper<Product>() {{
-            setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[]{"id", "name", "description", "price"});
-                setDelimiter(";");
-            }});
-            setFieldSetMapper(new BeanWrapperFieldSetMapper<Product>() {{
-                setTargetType(Product.class);
-            }});
-        }});
-        return reader;
+        return new CsvReader("import.csv");
     }
 
     @Bean
@@ -94,7 +82,7 @@ public class BatchExampleConfig {
                 .<Product, Product>chunk(10)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
-                .writer(new CsvWriter("abcde.csv")) //products-export.csv
+                .writer(new CsvWriter("products-export.csv"))
                 .build();
     }
 
