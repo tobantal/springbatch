@@ -59,7 +59,7 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public Step step1(DataSource dataSource) {
+    public Step stepCsvToDb(DataSource dataSource) {
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
@@ -69,7 +69,7 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public Step step2(DataSource dataSource) {
+    public Step stepDbToCsv(DataSource dataSource) {
         return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
                 .reader(readerDB(dataSource))
@@ -80,10 +80,10 @@ public class BatchExampleConfig {
 
     @Bean
     public Job mainJob(DataSource dataSource) {
-        return jobBuilderFactory.get("JOB: " + UUID.randomUUID().toString())
+        return jobBuilderFactory.get("JOB-" + UUID.randomUUID().toString())
                 .incrementer(new RunIdIncrementer())
-		.flow(step1(dataSource))
-		.on(AppConstants.STEP_COMPLETED).to(step2(dataSource))
+		.flow(stepCsvToDb(dataSource))
+		.on(AppConstants.STEP_COMPLETED).to(stepDbToCsv(dataSource))
 		.on(AppConstants.STEP_FAILED).fail()
                 .end()
                 .build();
