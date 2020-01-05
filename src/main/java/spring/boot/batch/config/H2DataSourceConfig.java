@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class H2DataSourceConfig {
 
     @Bean
-    public DataSource getDataSource() {
+    public DataSource h2DataSource() {
         return DataSourceBuilder.create()
             .driverClassName("org.h2.Driver")
             .url("jdbc:h2:mem:test")

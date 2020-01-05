@@ -12,6 +12,7 @@ import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,8 +42,9 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public JdbcCursorItemReader<Product> readerDB(DataSource dataSource) {
-        return new JdbcReader(dataSource);
+    public JdbcCursorItemReader<Product> readerDB(
+        @Qualifier("h2DataSource") DataSource h2DataSource) {
+        return new JdbcReader(h2DataSource);
     }
 
     @Bean
@@ -57,7 +59,7 @@ public class BatchExampleConfig {
 
     @Bean
     public Step step1(DataSource dataSource) {
-        return stepBuilderFactory.get("step1")
+        return stepBuilderFactory.get("Csv-to-Db")
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor())
@@ -67,7 +69,7 @@ public class BatchExampleConfig {
 
     @Bean
     public Step step2(DataSource dataSource) {
-        return stepBuilderFactory.get("step2")
+        return stepBuilderFactory.get("Db-to-Csv")
                 .<Product, Product>chunk(10)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
