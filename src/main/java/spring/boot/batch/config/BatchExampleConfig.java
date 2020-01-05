@@ -34,6 +34,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import spring.boot.batch.mapper.ProductRowMapper;
 import spring.boot.batch.model.Product;
+import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.util.StringHeaderWriter;
 import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
 
@@ -46,8 +47,11 @@ public class BatchExampleConfig {
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
 
-    @Autowired
-    public DataSource dataSource;
+    //@Autowired
+    //public DataSource dataSource;
+
+    //@Autowired
+    //public JdbcReader jdbcReader;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -73,12 +77,15 @@ public class BatchExampleConfig {
      */
 
     @Bean
-    public JdbcCursorItemReader<Product> readerDB() {
+    public JdbcCursorItemReader<Product> readerDB(DataSource dataSource) {
+
         JdbcCursorItemReader<Product> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql("SELECT * FROM products where product_id >= 0");
         reader.setRowMapper(new ProductRowMapper());
         return reader;
+
+        //return jdbcReader;
     }
 
     @Bean
@@ -87,7 +94,7 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public JdbcBatchItemWriter<Product> writerDB() {
+    public JdbcBatchItemWriter<Product> writerDB(DataSource dataSource) {
         JdbcBatchItemWriter<Product> writer = new JdbcBatchItemWriterWrapper();
         writer.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
         writer.setSql("INSERT INTO products " +
@@ -98,31 +105,31 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public Step step1() {
+    public Step step1(DataSource dataSource) {
         return stepBuilderFactory.get("step1")
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor())
-                .writer(writerDB())
+                .writer(writerDB(dataSource))
                 .build();
     }
 
     @Bean
-    public Step step2() {
+    public Step step2(DataSource dataSource) {
         return stepBuilderFactory.get("step2")
                 .<Product, Product>chunk(10)
-                .reader(readerDB())
+                .reader(readerDB(dataSource))
                 .processor(identityProcessor())
                 .writer(writerCsv())
                 .build();
     }
 
     @Bean
-    public Job mainJob() {
+    public Job mainJob(DataSource dataSource) {
         return jobBuilderFactory.get("MAIN_JOB") // AppConstants.JOB_NAME_DEFERRAL
                 .incrementer(new RunIdIncrementer())
-		.flow(step1())
-		.on("COMPLETED").to(step2())
+		.flow(step1(dataSource))
+		.on("COMPLETED").to(step2(dataSource))
 		.on("FAILED").fail()
                 .end()
                 .build();
