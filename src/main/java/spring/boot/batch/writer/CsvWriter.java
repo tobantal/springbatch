@@ -1,7 +1,5 @@
 package spring.boot.batch.writer;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
@@ -13,16 +11,12 @@ import org.springframework.stereotype.Component;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
 
-@Component
+//@Component
 public class CsvWriter extends FlatFileItemWriter<Product> {
 
-    public CsvWriter file(String exportFilePath) {
+    public CsvWriter(String exportFilePath) {
         setResource(new FileSystemResource(exportFilePath));
-        return this;
-    }
 
-    @PostConstruct
-    public void init() {
         String exportFileHeader = String.format("REPORT\nDATE:%s\nID;NAME;DESCRIPTION;PRICE", new java.util.Date());
         StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
         setHeaderCallback(headerWriter);

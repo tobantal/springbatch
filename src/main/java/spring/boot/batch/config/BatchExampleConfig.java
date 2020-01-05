@@ -39,7 +39,7 @@ public class BatchExampleConfig {
 
     @Autowired public JdbcReader jdbcReader;
 
-    @Autowired public CsvWriter csvWriter;
+    //@Autowired public CsvWriter csvWriter;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -94,7 +94,7 @@ public class BatchExampleConfig {
                 .<Product, Product>chunk(10)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
-                .writer(csvWriter.file("products-export.csv"))
+                .writer(new CsvWriter("abcde.csv")) //products-export.csv
                 .build();
     }
 
