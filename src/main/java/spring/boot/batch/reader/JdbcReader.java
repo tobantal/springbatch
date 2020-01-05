@@ -11,14 +11,14 @@ import lombok.RequiredArgsConstructor;
 import spring.boot.batch.mapper.ProductRowMapper;
 import spring.boot.batch.model.Product;
 
-//@Component
-@RequiredArgsConstructor
+@Component
+//@RequiredArgsConstructor
 public class JdbcReader extends JdbcCursorItemReader<Product> {
 
-    //@Autowired
-    private final DataSource dataSource; //FIXME: autowired problem
+    public JdbcReader(DataSource dataSource) {
+        setDataSource(dataSource);
+        setSql("SELECT * FROM products where product_id >= 0");
+        setRowMapper(new ProductRowMapper());
+    }
 
-    private final String sql = "SELECT * FROM products where product_id >= 0";
-
-    private final RowMapper rowMapper = new ProductRowMapper();
 }

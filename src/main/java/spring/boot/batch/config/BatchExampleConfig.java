@@ -51,11 +51,9 @@ public class BatchExampleConfig {
     //@Autowired
     //public DataSource dataSource;
 
-    //@Autowired
-    //public JdbcReader jdbcReader;
+    @Autowired public JdbcReader jdbcReader;
 
-    @Autowired
-    public CsvWriter csvWriter;
+    @Autowired public CsvWriter csvWriter;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -82,14 +80,7 @@ public class BatchExampleConfig {
 
     @Bean
     public JdbcCursorItemReader<Product> readerDB(DataSource dataSource) {
-
-        JdbcCursorItemReader<Product> reader = new JdbcCursorItemReader<>();
-        reader.setDataSource(dataSource);
-        reader.setSql("SELECT * FROM products where product_id >= 0");
-        reader.setRowMapper(new ProductRowMapper());
-        return reader;
-
-        //return jdbcReader;
+        return jdbcReader;
     }
 
     @Bean
@@ -124,12 +115,12 @@ public class BatchExampleConfig {
                 .<Product, Product>chunk(10)
                 .reader(readerDB(dataSource))
                 .processor(identityProcessor())
-                .writer(csvWriter)
+                .writer(csvWriter.file("products-export.csv"))
                 .build();
     }
 
     @Bean
-    public Job mainJob(DataSource dataSource, CsvWriter csvWriter) {
+    public Job mainJob(DataSource dataSource) {
         return jobBuilderFactory.get("MAIN_JOB") // AppConstants.JOB_NAME_DEFERRAL
                 .incrementer(new RunIdIncrementer())
 		.flow(step1(dataSource))
@@ -138,10 +129,5 @@ public class BatchExampleConfig {
                 .end()
                 .build();
     }
-/*
-    @Bean
-    ItemWriter<Product> writerCsv(CsvWriter csvWriter) {
-        return csvWriter;
-    }
-*/
+
 }

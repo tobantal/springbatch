@@ -10,22 +10,22 @@ import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
 
 @Component
-@RequiredArgsConstructor
 public class CsvWriter extends FlatFileItemWriter<Product> {
+
+    public CsvWriter file(String exportFilePath) {
+        setResource(new FileSystemResource(exportFilePath));
+        return this;
+    }
 
     @PostConstruct
     public void init() {
         String exportFileHeader = String.format("REPORT\nDATE:%s\nID;NAME;DESCRIPTION;PRICE", new java.util.Date());
         StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
         setHeaderCallback(headerWriter);
-
-        String exportFilePath = "products-export.csv";
-        setResource(new FileSystemResource(exportFilePath));
 
         LineAggregator<Product> lineAggregator = createLineAggregator();
         setLineAggregator(lineAggregator);
