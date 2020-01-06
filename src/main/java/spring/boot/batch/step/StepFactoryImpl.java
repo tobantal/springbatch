@@ -24,16 +24,16 @@ public class StepFactoryImpl implements StepFactory {
     @Qualifier("identityProcessor")
     private final ItemProcessor<Product, Product> identityProcessor;
 
-    @Qualifier("h2DataSource")
-    private final DataSource h2DataSource;
+    //@Qualifier("h2DataSource")
+    //private final DataSource h2DataSource;
 
 	@Override
-	public Step createCsvToDbStep(String importFile) {
+	public Step createCsvToDbStep(String importFile, DataSource dataSource) {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(new CsvReader(importFile))
                 .processor(identityProcessor)
-                .writer(new JdbcWriter(h2DataSource))
+                .writer(new JdbcWriter(dataSource))
                 .build();
 	}
 

@@ -73,15 +73,15 @@ public class BatchExampleConfig {
 
     @Bean
     public Step stepCsvToDb() {
-        /*
+
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor)
                 .writer(writerDB())
                 .build();
-                */
-        return stepFactory.createCsvToDbStep("import.csv");
+
+        //return stepFactory.createCsvToDbStep("import.csv", dataSource);
     }
 
     @Bean

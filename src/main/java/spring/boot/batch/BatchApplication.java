@@ -3,6 +3,8 @@ package spring.boot.batch;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,12 +23,13 @@ public class BatchApplication {
 
     //generateFakeData(ctx);
 
+
     ImportService importService = ctx.getBean(ImportService.class);
     importService.start();
 
     System.exit(SpringApplication.exit(ctx));
     }
-    
+
     private static void generateFakeData(ConfigurableApplicationContext ctx) {
         ProductPagingAndSortingRepository repository = ctx.getBean(ProductPagingAndSortingRepository.class);
     long count = 100_000L;
