@@ -22,6 +22,7 @@ import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
+import spring.boot.batch.step.StepFactory;
 import spring.boot.batch.writer.CsvWriter;
 import spring.boot.batch.writer.JdbcWriter;
 
@@ -52,6 +53,9 @@ public class BatchExampleConfig {
     @Qualifier("blankAddressProcessor")
     ItemProcessor<Product, Product> blankAddressProcessor;
 
+    @Autowired
+    StepFactory stepFactory;
+
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
         return new CsvReader("import.csv");
@@ -69,12 +73,15 @@ public class BatchExampleConfig {
 
     @Bean
     public Step stepCsvToDb() {
+        /*
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor)
                 .writer(writerDB())
                 .build();
+                */
+        return stepFactory.createCsvToDbStep("import.csv");
     }
 
     @Bean
