@@ -44,6 +44,10 @@ public class BatchExampleConfig {
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    @Qualifier("identityProcessor")
+    ItemProcessor<Product, Product> identityProcessor;
+
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
         return new CsvReader("import.csv");
@@ -52,11 +56,6 @@ public class BatchExampleConfig {
     @Bean
     public JdbcCursorItemReader<Product> readerDB() {
         return new JdbcReader(h2DataSource);
-    }
-
-    @Bean
-    public ItemProcessor<Product, Product> identityProcessor() {
-        return person -> person;
     }
 
     @Bean
@@ -69,7 +68,7 @@ public class BatchExampleConfig {
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
-                .processor(identityProcessor())
+                .processor(identityProcessor)
                 .writer(writerDB())
                 .build();
     }
@@ -79,7 +78,7 @@ public class BatchExampleConfig {
         return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
                 .reader(readerDB())
-                .processor(identityProcessor())
+                .processor(identityProcessor)
                 .writer(new CsvWriter("products-export.csv"))
                 .build();
     }
