@@ -23,7 +23,6 @@ public class BatchApplication {
 
     //generateFakeData(ctx);
 
-
     ImportService importService = ctx.getBean(ImportService.class);
     importService.start();
 

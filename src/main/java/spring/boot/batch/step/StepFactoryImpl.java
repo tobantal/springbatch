@@ -9,9 +9,11 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
+import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.writer.JdbcWriter;
 
@@ -19,10 +21,11 @@ import spring.boot.batch.writer.JdbcWriter;
 @RequiredArgsConstructor
 public class StepFactoryImpl implements StepFactory {
 
+    @Getter
     private final StepBuilderFactory stepBuilderFactory;
 
-    @Qualifier("identityProcessor")
-    private final ItemProcessor<Product, Product> identityProcessor;
+    @Getter
+    private final IdentityProcessor processor;
 
     //@Qualifier("h2DataSource")
     //private final DataSource h2DataSource;
@@ -32,7 +35,7 @@ public class StepFactoryImpl implements StepFactory {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(new CsvReader(importFile))
-                .processor(identityProcessor)
+                .processor(processor)
                 .writer(new JdbcWriter(dataSource))
                 .build();
 	}
