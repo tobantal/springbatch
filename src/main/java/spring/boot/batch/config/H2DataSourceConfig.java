@@ -6,10 +6,10 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class H2DataSourceConfig {
 
-    @Bean
+    //@Bean
     public DataSource h2DataSource() {
         return DataSourceBuilder.create()
             .driverClassName("org.h2.Driver")

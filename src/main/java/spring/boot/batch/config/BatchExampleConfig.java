@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
+import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.step.StepFactory;
@@ -38,9 +39,9 @@ public class BatchExampleConfig {
     @Autowired
     public JdbcReader jdbcReader;
 
-    @Autowired
-    @Qualifier("h2DataSource")
-    DataSource h2DataSource;
+    //@Autowired
+    //@Qualifier("h2DataSource")
+    //DataSource h2DataSource;
 
     @Autowired
     DataSource dataSource;
@@ -56,6 +57,9 @@ public class BatchExampleConfig {
     @Autowired
     StepFactory stepFactory;
 
+    @Autowired
+    IdentityProcessor processor;
+
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
         return new CsvReader("import.csv");
@@ -63,7 +67,7 @@ public class BatchExampleConfig {
 
     @Bean
     public JdbcCursorItemReader<Product> readerDB() {
-        return new JdbcReader(h2DataSource);
+        return new JdbcReader(dataSource);
     }
 
     @Bean
@@ -73,15 +77,21 @@ public class BatchExampleConfig {
 
     @Bean
     public Step stepCsvToDb() {
-
+        return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
+                .<Product, Product>chunk(100)
+                .reader(new CsvReader("import.csv")) //
+                .processor(identityProcessor)
+                .writer(writerDB()) //WTF ??? new JdbcWriter(dataSource)
+                .build();
+        /*
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor)
                 .writer(writerDB())
                 .build();
-
-        //return stepFactory.createCsvToDbStep("import.csv", dataSource);
+*/
+      //  return stepFactory.createCsvToDbStep("import.csv");
     }
 
     @Bean

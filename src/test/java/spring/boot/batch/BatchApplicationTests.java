@@ -30,14 +30,14 @@ class BatchApplicationTests {
 	void contextLoads() {
         assertNotNull(ctx);
 
-        DataSource ds = ctx.getBean(DataSource.class);
-        assertNotNull(ds);
-
         StepBuilderFactory sbf = stepFactory.getStepBuilderFactory();
         assertNotNull(sbf);
 
         IdentityProcessor processor = stepFactory.getProcessor();
         assertNotNull(processor);
+
+        DataSource ds = stepFactory.getDataSource();
+        assertNotNull(ds);
 	}
 
 }
