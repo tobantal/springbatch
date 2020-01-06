@@ -37,14 +37,20 @@ public class BatchExampleConfig {
     @Autowired
     public JdbcReader jdbcReader;
 
+    @Autowired
+    @Qualifier("h2DataSource")
+    DataSource h2DataSource;
+
+    @Autowired
+    DataSource dataSource;
+
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
         return new CsvReader("import.csv");
     }
 
     @Bean
-    public JdbcCursorItemReader<Product> readerDB(
-        @Qualifier("h2DataSource") DataSource h2DataSource) {
+    public JdbcCursorItemReader<Product> readerDB() {
         return new JdbcReader(h2DataSource);
     }
 
@@ -54,37 +60,37 @@ public class BatchExampleConfig {
     }
 
     @Bean
-    public JdbcBatchItemWriter<Product> writerDB(DataSource dataSource) {
+    public JdbcBatchItemWriter<Product> writerDB() {
         return new JdbcWriter(dataSource);
     }
 
     @Bean
-    public Step stepCsvToDb(DataSource dataSource) {
+    public Step stepCsvToDb() {
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(readerCsv())
                 .processor(identityProcessor())
-                .writer(writerDB(dataSource))
+                .writer(writerDB())
                 .build();
     }
 
     @Bean
-    public Step stepDbToCsv(DataSource dataSource) {
+    public Step stepDbToCsv() {
         return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
-                .reader(readerDB(dataSource))
+                .reader(readerDB())
                 .processor(identityProcessor())
                 .writer(new CsvWriter("products-export.csv"))
                 .build();
     }
 
     @Bean
-    public Job mainJob(DataSource dataSource) {
+    public Job mainJob() {
         return jobBuilderFactory.get("JOB-" + UUID.randomUUID().toString())
                 .incrementer(new RunIdIncrementer())
-		.flow(stepCsvToDb(dataSource))
-		.on(AppConstants.STEP_COMPLETED).to(stepDbToCsv(dataSource))
-		.on(AppConstants.STEP_FAILED).fail()
+                .flow(stepCsvToDb())
+                .on(AppConstants.STEP_COMPLETED).to(stepDbToCsv())
+                .on(AppConstants.STEP_FAILED).fail()
                 .end()
                 .build();
     }
