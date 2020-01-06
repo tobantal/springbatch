@@ -48,6 +48,10 @@ public class BatchExampleConfig {
     @Qualifier("identityProcessor")
     ItemProcessor<Product, Product> identityProcessor;
 
+    @Autowired
+    @Qualifier("blankAddressProcessor")
+    ItemProcessor<Product, Product> blankAddressProcessor;
+
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
         return new CsvReader("import.csv");
@@ -78,7 +82,7 @@ public class BatchExampleConfig {
         return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
                 .reader(readerDB())
-                .processor(identityProcessor)
+                .processor(blankAddressProcessor)
                 .writer(new CsvWriter("products-export.csv"))
                 .build();
     }
