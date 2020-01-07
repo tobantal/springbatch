@@ -24,13 +24,15 @@ public class StepFactoryImpl implements StepFactory {
     private final JdbcWriter jdbcWriter;
     private final JdbcReader jdbcReader;
     private final BlankAddressProcessor blankAddressProcessor;
+    private final CsvReader csvReader;
 
 	@Override
 	public Step createCsvToDbStep(String importFile) {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
-                .reader(new CsvReader(importFile))
+                .reader(csvReader) //new CsvReader(importFile)
                 .processor(processor)
+                //TODO add listener
                 .writer(new JdbcBatchItemWriterWrapper(jdbcWriter, 4))
                 .build();
 	}

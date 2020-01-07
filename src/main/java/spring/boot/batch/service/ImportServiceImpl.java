@@ -3,6 +3,7 @@ package spring.boot.batch.service;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -23,9 +24,12 @@ public class ImportServiceImpl implements ImportService {
     @Override
     public void start() {
         try {
+            JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+            jobParametersBuilder.addString("importFile", "import.csv");
+
             JobExecution jobExecution = jobLauncher.run(
-                jobFactory.createComplexJob("complex job", "import.csv", "products-export.csv"),
-                new JobParameters());
+                jobFactory.createComplexJob("complex job", "???", "products-export.csv"),
+                jobParametersBuilder.toJobParameters()); //new JobParameters()
 
             BatchStatus status;
             do {
