@@ -101,12 +101,15 @@ public class BatchExampleConfig {
 
     @Bean
     public Step stepDbToCsv() {
+        /*
         return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
                 .reader(readerDB())
                 .processor(blankAddressProcessor)
                 .writer(new CsvWriter("products-export.csv"))
                 .build();
+                */
+        return stepFactory.createDbToCsvStep("products-export.csv");
     }
 
     @Bean
