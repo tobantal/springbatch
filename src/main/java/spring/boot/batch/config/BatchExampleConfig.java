@@ -19,12 +19,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import spring.boot.batch.constants.AppConstants;
+import spring.boot.batch.job.JobFactory;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.step.StepFactory;
-import spring.boot.batch.writer.CsvWriter;
 import spring.boot.batch.writer.JdbcWriter;
 
 @Configuration
@@ -62,6 +62,9 @@ public class BatchExampleConfig {
 
     @Autowired
     IdentityProcessor processor;
+
+    @Autowired
+    JobFactory jobFactory;
 
     @Bean
     public FlatFileItemReader<Product> readerCsv() {
@@ -114,6 +117,7 @@ public class BatchExampleConfig {
 
     @Bean
     public Job mainJob() {
+        /*
         return jobBuilderFactory.get("JOB-" + UUID.randomUUID().toString())
                 .incrementer(new RunIdIncrementer())
                 .flow(stepCsvToDb())
@@ -121,6 +125,8 @@ public class BatchExampleConfig {
                 .on(AppConstants.STEP_FAILED).fail()
                 .end()
                 .build();
+                */
+        return jobFactory.createComplexJob("COMPLEX_JOB", "import.csv", "products-export.csv");
     }
 
 }
