@@ -35,9 +35,6 @@ class BatchApplicationTests {
 
         IdentityProcessor processor = stepFactory.getProcessor();
         assertNotNull(processor);
-
-        DataSource ds = stepFactory.getDataSource();
-        assertNotNull(ds);
 	}
 
 }

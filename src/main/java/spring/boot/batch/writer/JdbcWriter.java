@@ -4,9 +4,11 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.stereotype.Component;
 
 import spring.boot.batch.model.Product;
 
+@Component
 public class JdbcWriter extends JdbcBatchItemWriter<Product> {
 
     public JdbcWriter(DataSource dataSource) {

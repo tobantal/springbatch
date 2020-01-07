@@ -27,9 +27,7 @@ public class StepFactoryImpl implements StepFactory {
     @Getter
     private final IdentityProcessor processor;
 
-    //@Qualifier("h2DataSource")
-    @Getter
-    private final DataSource dataSource;
+    private final JdbcWriter jdbcWriter;
 
 	@Override
 	public Step createCsvToDbStep(String importFile) {
@@ -37,7 +35,7 @@ public class StepFactoryImpl implements StepFactory {
                 .<Product, Product>chunk(100)
                 .reader(new CsvReader(importFile))
                 .processor(processor)
-                .writer(new JdbcWriter(dataSource))
+                .writer(jdbcWriter)
                 .build();
 	}
 

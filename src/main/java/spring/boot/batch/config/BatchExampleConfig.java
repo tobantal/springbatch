@@ -31,13 +31,16 @@ import spring.boot.batch.writer.JdbcWriter;
 public class BatchExampleConfig {
 
     @Autowired
-    public JobBuilderFactory jobBuilderFactory;
+    JobBuilderFactory jobBuilderFactory;
 
     @Autowired
-    public StepBuilderFactory stepBuilderFactory;
+    StepBuilderFactory stepBuilderFactory;
 
     @Autowired
-    public JdbcReader jdbcReader;
+    JdbcReader jdbcReader;
+
+    @Autowired
+    JdbcWriter jdbcWriter;
 
     //@Autowired
     //@Qualifier("h2DataSource")
@@ -77,12 +80,14 @@ public class BatchExampleConfig {
 
     @Bean
     public Step stepCsvToDb() {
+        /*
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
                 .reader(new CsvReader("import.csv")) //
                 .processor(identityProcessor)
-                .writer(writerDB()) //WTF ??? new JdbcWriter(dataSource)
+                .writer(jdbcWriter) //WTF ??? new JdbcWriter(dataSource)
                 .build();
+                */
         /*
         return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(100)
@@ -91,7 +96,7 @@ public class BatchExampleConfig {
                 .writer(writerDB())
                 .build();
 */
-      //  return stepFactory.createCsvToDbStep("import.csv");
+      return stepFactory.createCsvToDbStep("import.csv");
     }
 
     @Bean
