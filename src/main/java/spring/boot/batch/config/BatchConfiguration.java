@@ -13,58 +13,51 @@ import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
+import spring.boot.batch.processor.BlankAddressProcessor;
+import spring.boot.batch.processor.IdentityProcessor;
+import spring.boot.batch.reader.CsvReader;
+import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.repository.ProductPagingAndSortingRepository;
 import spring.boot.batch.util.StringHeaderWriter;
+import spring.boot.batch.writer.CsvWriter;
+import spring.boot.batch.writer.JdbcWriter;
 
-//@Configuration
-//@EnableBatchProcessing
+@Configuration
 public class BatchConfiguration {
 
-    // @Autowired
-    public JobBuilderFactory jobBuilderFactory;
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
-    // @Autowired
-    public StepBuilderFactory stepBuilderFactory;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    private CsvReader csvReader;
+
+    @Autowired
+    private IdentityProcessor identityProcessor;
+
+    @Autowired
+    private JdbcWriter jdbcWriter;
+
+    @Autowired
+    private JdbcReader jdbcReader;
+
+    @Autowired
+    private BlankAddressProcessor blankAddressProcessor;
+
+    @Autowired
+    private CsvWriter csvWriter;
 
     // @Autowired
     public ProductPagingAndSortingRepository productPagingAndSortingRepository;
-
-    // @Bean
-    public ItemWriter<Product> writer() {
-        FlatFileItemWriter<Product> writer = new FlatFileItemWriter<>();
-
-        String exportFileHeader = "Name,Desc,Price";
-        StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
-        writer.setHeaderCallback(headerWriter);
-        writer.setResource(new ClassPathResource("D:/sample-data.csv"));
-
-        LineAggregator<Product> lineAgg = createCustomerInsrAgg();
-        writer.setLineAggregator(lineAgg);
-
-        return writer;
-    }
-
-    // @Bean
-    public LineAggregator<Product> createCustomerInsrAgg() {
-
-        DelimitedLineAggregator<Product> deliAgg = new DelimitedLineAggregator<>();
-        deliAgg.setDelimiter(",");
-
-        FieldExtractor<Product> fieldExtractor = createCustomerInsrExtractor();
-        deliAgg.setFieldExtractor(fieldExtractor);
-        return deliAgg;
-
-    }
-
-    // @Bean
-    public FieldExtractor<Product> createCustomerInsrExtractor() {
-        BeanWrapperFieldExtractor<Product> fieldExtractor = new BeanWrapperFieldExtractor<>();
-        fieldExtractor.setNames(new String[] { "name", "description", "price" });
-        return fieldExtractor;
-    }
 
     // @Bean
     public ItemReader<Product> reader() {
@@ -74,15 +67,35 @@ public class BatchConfiguration {
         return reader;
     }
 
-    // @Bean
-    public Job job() {
-        return jobBuilderFactory.get("job2").incrementer(new RunIdIncrementer()).flow(step()).end().build();
-    }
+    @Bean
+    public Step dbToCsvStep() {
+		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
+                .<Product, Product>chunk(AppConstants.STEP_CHUNK)
+                .reader(jdbcReader)
+                .processor(blankAddressProcessor)
+                .writer(csvWriter)
+                .build();
+        }
 
-    // @Bean
-    public Step step() {
-        return stepBuilderFactory.get("step2").<Product, Product>chunk(10).reader(reader()).writer(writer())
+    @Bean
+    public Step csvToDbStep() {
+		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
+                .<Product, Product>chunk(AppConstants.STEP_CHUNK)
+                .reader(csvReader)
+                .processor(identityProcessor)
+                //TODO add listener
+                .writer(jdbcWriter) //new JdbcBatchItemWriterWrapper(
                 .build();
     }
 
+    @Bean
+    public Job complexJob() { //String jobName
+        return jobBuilderFactory.get("complex_job")
+                .incrementer(new RunIdIncrementer())
+                .flow(csvToDbStep())
+                .on(AppConstants.STEP_COMPLETED).to(dbToCsvStep())
+                .on(AppConstants.STEP_FAILED).fail()
+                .end()
+                .build();
+    }
 }
