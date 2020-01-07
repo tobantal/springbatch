@@ -45,7 +45,7 @@ public class StepFactoryImpl implements StepFactory {
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(jdbcReader)
                 .processor(blankAddressProcessor)
-                .writer(csvWriter) //new CsvWriter(exportFile)
+                .writer(csvWriter)
                 .build();
 	}
 

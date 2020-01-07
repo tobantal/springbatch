@@ -4,5 +4,5 @@ import org.springframework.batch.core.Job;
 
 public interface JobFactory {
 
-    Job createComplexJob(String jobName, String importFile, String exportFile);
+    Job createComplexJob(String jobName);
 }

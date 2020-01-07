@@ -22,13 +22,13 @@ public class ImportServiceImpl implements ImportService {
     private final JobFactory jobFactory;
 
     @Override
-    public void start() {
+    public void start() { // <- JobParameters
         try {
             JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
             jobParametersBuilder.addString("importFile", "import.csv");
             jobParametersBuilder.addString("exportFile", "products-export.csv");
             JobExecution jobExecution = jobLauncher.run(
-                jobFactory.createComplexJob("complex job", "???", "???"),
+                jobFactory.createComplexJob("complex job"),
                 jobParametersBuilder.toJobParameters());
 
             BatchStatus status;

@@ -17,7 +17,7 @@ public class JobFactoryImpl implements JobFactory {
     private final StepFactory stepFactory;
 
     @Override
-    public Job createComplexJob(String jobName, String importFile, String exportFile) {
+    public Job createComplexJob(String jobName) {
         return jobBuilderFactory.get(jobName)
                 .incrementer(new RunIdIncrementer())
                 .flow(stepFactory.createCsvToDbStep())
