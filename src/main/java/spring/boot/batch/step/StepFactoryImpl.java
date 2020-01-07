@@ -21,7 +21,6 @@ public class StepFactoryImpl implements StepFactory {
     private final StepBuilderFactory stepBuilderFactory;
     private final IdentityProcessor processor;
     private final JdbcWriter jdbcWriter;
-
     private final JdbcReader jdbcReader;
     private final BlankAddressProcessor blankAddressProcessor;
 
@@ -37,6 +36,8 @@ public class StepFactoryImpl implements StepFactory {
 
 	@Override
 	public Step createDbToCsvStep(String exportFile) {
+        // TODO clone jdbcReader
+        jdbcReader.setSql("SELECT * FROM products where product_id >= 2 and product_id <= 7");
 		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(100)
                 .reader(jdbcReader)
