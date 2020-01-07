@@ -32,6 +32,7 @@ public class ImportServiceImpl implements ImportService {
             jobParametersBuilder.addString("importFile", "import.csv");
             jobParametersBuilder.addString("exportFile", "products-export.csv");
             jobParametersBuilder.addString("jdbcReaderSql", "SELECT * FROM products where product_id >= 3 and product_id <= 10");
+            jobParametersBuilder.addString("jobName", "COMPLEX_JOB");
 
             JobExecution jobExecution = jobLauncher.run(
                 job, //jobFactory.createComplexJob("complex job"),

@@ -3,7 +3,9 @@ package spring.boot.batch.config;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -14,6 +16,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -30,7 +33,7 @@ import spring.boot.batch.writer.CsvWriter;
 import spring.boot.batch.writer.JdbcWriter;
 
 @Configuration
-public class BatchConfiguration {
+public class BatchConfiguration { // rename to StepsConfig
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
@@ -68,17 +71,18 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step dbToCsvStep() {
+    public Step dbToCsvStep() { // <- beans
 		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(jdbcReader)
                 .processor(blankAddressProcessor)
                 .writer(csvWriter)
+                //TODO add listener
                 .build();
         }
 
     @Bean
-    public Step csvToDbStep() {
+    public Step csvToDbStep() { // <- beans
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(csvReader)
@@ -88,8 +92,8 @@ public class BatchConfiguration {
                 .build();
     }
 
-    @Bean
-    public Job complexJob() { //String jobName
+    @Bean //FIXME Create bean from Factory
+    public Job complexJob() { //@Value("#{jobParameters['jobName']}") String jobName
         return jobBuilderFactory.get("complex_job")
                 .incrementer(new RunIdIncrementer())
                 .flow(csvToDbStep())
