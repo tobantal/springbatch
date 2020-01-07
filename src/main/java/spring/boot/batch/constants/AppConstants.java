@@ -7,4 +7,6 @@ public interface AppConstants {
 
     String STEP_COMPLETED = "COMPLETED";
     String STEP_FAILED = "FAILED";
+
+    int STEP_CHUNK = 100;
 }

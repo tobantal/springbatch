@@ -27,7 +27,7 @@ public class StepFactoryImpl implements StepFactory {
 	@Override
 	public Step createCsvToDbStep(String importFile) {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
-                .<Product, Product>chunk(100)
+                .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(new CsvReader(importFile))
                 .processor(processor)
                 .writer(jdbcWriter)
@@ -39,7 +39,7 @@ public class StepFactoryImpl implements StepFactory {
         // TODO clone jdbcReader
         jdbcReader.setSql("SELECT * FROM products where product_id >= 2 and product_id <= 7");
 		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
-                .<Product, Product>chunk(100)
+                .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(jdbcReader)
                 .processor(blankAddressProcessor)
                 .writer(new CsvWriter(exportFile))
