@@ -10,12 +10,15 @@ import spring.boot.batch.model.Product;
 
 public class CsvReader extends FlatFileItemReader<Product> {
 
+    private final String delimeter = ";";
+    private final String namesCsv = "id;name;description;price";
+
     public CsvReader(String importFile) {
-        setResource(new ClassPathResource(importFile)); //"import.csv"
+        setResource(new ClassPathResource(importFile));
         setLineMapper(new DefaultLineMapper<Product>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[]{"id", "name", "description", "price"});
-                setDelimiter(";");
+                setNames(namesCsv.split(delimeter));
+                setDelimiter(delimeter);
             }});
             setFieldSetMapper(new BeanWrapperFieldSetMapper<Product>() {{
                 setTargetType(Product.class);
