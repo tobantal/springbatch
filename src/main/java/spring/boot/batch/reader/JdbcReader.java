@@ -13,7 +13,7 @@ public class JdbcReader extends JdbcCursorItemReader<Product> {
 
     public JdbcReader(DataSource dataSource) {
         setDataSource(dataSource);
-        setSql("SELECT * FROM products where product_id >= 0");
+        setSql("SELECT * FROM products");
         setRowMapper(new ProductRowMapper());
     }
 
