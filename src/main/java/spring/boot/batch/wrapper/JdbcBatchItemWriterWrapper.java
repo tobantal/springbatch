@@ -8,11 +8,16 @@ import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.core.annotation.BeforeWrite;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 
+import lombok.RequiredArgsConstructor;
 import spring.boot.batch.model.Product;
 
+@RequiredArgsConstructor
 public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
-    private int chunks = 0;
+    private final JdbcBatchItemWriter<Product> writer;
+    private final int steps;
+
+    private int step = 1;
 
     @BeforeStep
     public void beforeStep( ) {
@@ -26,13 +31,13 @@ public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
 	@Override
 	public void write(List<? extends Product> items) throws Exception {
-        System.out.println(">>>>> " + this.getClass().toGenericString() + ".write(..)[" +(chunks++) +"]");
-        super.write(items);
+        writer.write(items);
     }
 
     @AfterWrite
     public void afterWrite( ) {
-        System.out.println("AFTER WRITE: JdbcBatchItemWriter");
+        //System.out.println("AFTER WRITE: JdbcBatchItemWriter");
+        System.out.println(String.format("AFTER WRITE: STEP[%d / %d]", step++, steps));
     }
 
     @AfterStep

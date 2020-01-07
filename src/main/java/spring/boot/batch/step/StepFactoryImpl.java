@@ -11,6 +11,7 @@ import spring.boot.batch.processor.BlankAddressProcessor;
 import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
+import spring.boot.batch.wrapper.JdbcBatchItemWriterWrapper;
 import spring.boot.batch.writer.CsvWriter;
 import spring.boot.batch.writer.JdbcWriter;
 
@@ -30,7 +31,7 @@ public class StepFactoryImpl implements StepFactory {
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(new CsvReader(importFile))
                 .processor(processor)
-                .writer(jdbcWriter)
+                .writer(new JdbcBatchItemWriterWrapper(jdbcWriter, 4))
                 .build();
 	}
 
