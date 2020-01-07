@@ -9,9 +9,11 @@ import org.springframework.batch.core.annotation.BeforeWrite;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import spring.boot.batch.model.Product;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
     private final JdbcBatchItemWriter<Product> writer;
@@ -21,12 +23,7 @@ public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
     @BeforeStep
     public void beforeStep( ) {
-        System.out.println("BEFORE STEP: JdbcBatchItemWriter");
-    }
-
-    @BeforeWrite
-    public void beforeWrite( ) {
-        System.out.println("BEFORE WRITE: JdbcBatchItemWriter");
+        log.info("BEFORE STEP: JdbcBatchItemWriter");
     }
 
 	@Override
@@ -36,13 +33,12 @@ public class JdbcBatchItemWriterWrapper extends JdbcBatchItemWriter<Product> {
 
     @AfterWrite
     public void afterWrite( ) {
-        //System.out.println("AFTER WRITE: JdbcBatchItemWriter");
-        System.out.println(String.format("AFTER WRITE: STEP[%d / %d]", step++, steps));
+        log.info(String.format("AFTER WRITE: STEP[%d / %d]", step++, steps));
     }
 
     @AfterStep
     public void afterStep( ) {
-        System.out.println("AFTER STEP: JdbcBatchItemWriter");
+        log.info("AFTER STEP: JdbcBatchItemWriter");
     }
 
 }
