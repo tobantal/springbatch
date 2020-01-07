@@ -2,7 +2,6 @@ package spring.boot.batch.service;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -27,6 +26,8 @@ public class ImportServiceImpl implements ImportService {
             JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
             jobParametersBuilder.addString("importFile", "import.csv");
             jobParametersBuilder.addString("exportFile", "products-export.csv");
+            jobParametersBuilder.addString("jdbcReaderSql", "SELECT * FROM products where product_id >= 3 and product_id <= 10");
+
             JobExecution jobExecution = jobLauncher.run(
                 jobFactory.createComplexJob("complex job"),
                 jobParametersBuilder.toJobParameters());
