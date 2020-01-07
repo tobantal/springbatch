@@ -26,10 +26,10 @@ public class ImportServiceImpl implements ImportService {
         try {
             JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
             jobParametersBuilder.addString("importFile", "import.csv");
-
+            jobParametersBuilder.addString("exportFile", "products-export.csv");
             JobExecution jobExecution = jobLauncher.run(
-                jobFactory.createComplexJob("complex job", "???", "products-export.csv"),
-                jobParametersBuilder.toJobParameters()); //new JobParameters()
+                jobFactory.createComplexJob("complex job", "???", "???"),
+                jobParametersBuilder.toJobParameters());
 
             BatchStatus status;
             do {

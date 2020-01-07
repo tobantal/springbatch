@@ -4,7 +4,7 @@ import org.springframework.batch.core.Step;
 
 public interface StepFactory {
 
-    Step createCsvToDbStep(String importFile);
+    Step createCsvToDbStep();
 
-    Step createDbToCsvStep(String exportFile);
+    Step createDbToCsvStep();
 }

@@ -25,12 +25,13 @@ public class StepFactoryImpl implements StepFactory {
     private final JdbcReader jdbcReader;
     private final BlankAddressProcessor blankAddressProcessor;
     private final CsvReader csvReader;
+    private final CsvWriter csvWriter;
 
 	@Override
-	public Step createCsvToDbStep(String importFile) {
+	public Step createCsvToDbStep() {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
-                .reader(csvReader) //new CsvReader(importFile)
+                .reader(csvReader)
                 .processor(processor)
                 //TODO add listener
                 .writer(new JdbcBatchItemWriterWrapper(jdbcWriter, 4))
@@ -38,14 +39,13 @@ public class StepFactoryImpl implements StepFactory {
 	}
 
 	@Override
-	public Step createDbToCsvStep(String exportFile) {
-        // TODO clone jdbcReader
+	public Step createDbToCsvStep() {
         jdbcReader.setSql("SELECT * FROM products where product_id >= 2 and product_id <= 7");
 		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(jdbcReader)
                 .processor(blankAddressProcessor)
-                .writer(new CsvWriter(exportFile))
+                .writer(csvWriter) //new CsvWriter(exportFile)
                 .build();
 	}
 
