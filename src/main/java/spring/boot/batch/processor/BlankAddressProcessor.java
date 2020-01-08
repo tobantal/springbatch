@@ -20,10 +20,9 @@ public class BlankAddressProcessor implements ItemProcessor<Product, Product> {
 	@Override
 	public Product process(Product item) throws Exception {
         if(excludeAddress) {
-            item.setDescription("");
+            item.setDescription(""); //TODO changed to setAddress()
         }
-        //TODO may be mapping into new pojo
-        // changed to setAddress()
+        //TODO may be mapping into new pojo (clone)
 		return item;
 	}
 
