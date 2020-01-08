@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 import spring.boot.batch.mapper.ProductRowMapper;
 import spring.boot.batch.model.Product;
 
-@Component("jdbcReader")
 @StepScope
+@Component("jdbcReader")
 public class JdbcReader extends JdbcCursorItemReader<Product> {
 
     public JdbcReader(DataSource dataSource,
         @Value("#{jobParameters['jdbcReaderSql']}") String sql) {
         setDataSource(dataSource);
-        setSql(sql); //"SELECT * FROM products"
+        setSql(sql);
         setRowMapper(new ProductRowMapper());
     }
 

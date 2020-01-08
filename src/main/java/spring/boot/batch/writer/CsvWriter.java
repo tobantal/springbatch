@@ -10,16 +10,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
+import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
 
-@Component("csvWriter")
 @StepScope
+@Component("csvWriter")
 public class CsvWriter extends FlatFileItemWriter<Product> {
 
     public CsvWriter(@Value("#{jobParameters['exportFile']}") String exportFile) {
         setResource(new FileSystemResource(exportFile));
 
+        //TODO export from jobParameters
         String exportFileHeader = String.format("REPORT\nDATE:%s\nID;NAME;DESCRIPTION;PRICE", new java.util.Date());
         StringHeaderWriter headerWriter = new StringHeaderWriter(exportFileHeader);
         setHeaderCallback(headerWriter);
@@ -30,7 +32,7 @@ public class CsvWriter extends FlatFileItemWriter<Product> {
 
     private LineAggregator<Product> createLineAggregator() {
         DelimitedLineAggregator<Product> lineAggregator = new DelimitedLineAggregator<>();
-        lineAggregator.setDelimiter(";");
+        lineAggregator.setDelimiter(AppConstants.DELIMETER);
 
         FieldExtractor<Product> fieldExtractor = createFieldExtractor();
         lineAggregator.setFieldExtractor(fieldExtractor);
@@ -40,7 +42,7 @@ public class CsvWriter extends FlatFileItemWriter<Product> {
 
     private FieldExtractor<Product> createFieldExtractor() {
         BeanWrapperFieldExtractor<Product> extractor = new BeanWrapperFieldExtractor<>();
-        extractor.setNames(new String[] { "id", "name", "description", "price" });
+        extractor.setNames(AppConstants.EXTRACT_FIELDS);
         return extractor;
     }
 

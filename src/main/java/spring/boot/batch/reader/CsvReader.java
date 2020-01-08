@@ -9,21 +9,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
 
-@Component("csvReader")
 @StepScope
+@Component("csvReader")
 public class CsvReader extends FlatFileItemReader<Product> {
-
-    private final String delimeter = ";";
-    private final String namesCsv = "id;name;description;price";
 
     public CsvReader(@Value("#{jobParameters['importFile']}") String importFile) {
         setResource(new ClassPathResource(importFile));
         setLineMapper(new DefaultLineMapper<Product>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(namesCsv.split(delimeter));
-                setDelimiter(delimeter);
+                setNames(AppConstants.EXTRACT_FIELDS);
+                setDelimiter(AppConstants.DELIMETER);
             }});
             setFieldSetMapper(new BeanWrapperFieldSetMapper<Product>() {{
                 setTargetType(Product.class);

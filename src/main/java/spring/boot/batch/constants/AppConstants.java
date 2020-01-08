@@ -9,4 +9,7 @@ public interface AppConstants {
     String STEP_FAILED = "FAILED";
 
     int STEP_CHUNK = 100;
+
+    String[] EXTRACT_FIELDS = new String[] { "id", "name", "description", "price" };
+    String DELIMETER = ";";
 }
