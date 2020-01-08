@@ -3,6 +3,8 @@ package spring.boot.batch.config;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
-import spring.boot.batch.processor.BlankAddressProcessor;
-import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.writer.CsvWriter;
@@ -50,9 +50,10 @@ public class BatchConfiguration { // rename to StepsConfig
         }
 
     @Bean
-    public Step csvToDbStep(CsvReader csvReader,
+    public Step csvToDbStep(
+        @Qualifier("csvReader") ItemReader<Product> csvReader,
         @Qualifier("identityProcessor") ItemProcessor<Product, Product> identityProcessor,
-        JdbcWriter jdbcWriter) {
+        @Qualifier("jdbcWriter") ItemWriter<Product> jdbcWriter) {
 		return stepBuilderFactory.get(AppConstants.STEP_CSV_TO_DB)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(csvReader)

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import spring.boot.batch.model.Product;
 
 @StepScope
-@Component
+@Component("jdbcWriter")
 public class JdbcWriter extends JdbcBatchItemWriter<Product> {
 
     public JdbcWriter(DataSource dataSource,

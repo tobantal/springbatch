@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import spring.boot.batch.model.Product;
 
-@Component
+@Component("csvReader")
 @StepScope
 public class CsvReader extends FlatFileItemReader<Product> {
 
