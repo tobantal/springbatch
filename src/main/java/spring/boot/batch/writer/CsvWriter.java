@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import spring.boot.batch.model.Product;
 import spring.boot.batch.util.StringHeaderWriter;
 
-@Component
+@Component("csvWriter")
 @StepScope
 public class CsvWriter extends FlatFileItemWriter<Product> {
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import spring.boot.batch.mapper.ProductRowMapper;
 import spring.boot.batch.model.Product;
 
-@Component
+@Component("jdbcReader")
 @StepScope
 public class JdbcReader extends JdbcCursorItemReader<Product> {
 

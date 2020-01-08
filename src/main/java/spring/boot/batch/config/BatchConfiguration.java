@@ -12,10 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
-import spring.boot.batch.reader.CsvReader;
-import spring.boot.batch.reader.JdbcReader;
-import spring.boot.batch.writer.CsvWriter;
-import spring.boot.batch.writer.JdbcWriter;
 
 @Configuration
 public class BatchConfiguration { // rename to StepsConfig
@@ -37,9 +33,10 @@ public class BatchConfiguration { // rename to StepsConfig
     */
 
     @Bean
-    public Step dbToCsvStep(JdbcReader jdbcReader,
+    public Step dbToCsvStep(
+        @Qualifier("jdbcReader") ItemReader<Product> jdbcReader,
         @Qualifier("blankAddressProcessor") ItemProcessor<Product, Product> blankAddressProcessor,
-        CsvWriter csvWriter) {
+        @Qualifier("csvWriter") ItemWriter<Product> csvWriter) {
 		return stepBuilderFactory.get(AppConstants.STEP_DB_TO_CSV)
                 .<Product, Product>chunk(AppConstants.STEP_CHUNK)
                 .reader(jdbcReader)
