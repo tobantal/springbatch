@@ -1,5 +1,7 @@
 package spring.boot.batch.service;
 
+import java.util.Date;
+
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -30,6 +32,8 @@ public class ImportServiceImpl implements ImportService {
             jobParametersBuilder.addString("jdbcWriterSql", "INSERT INTO products " +
                 "(product_id, name, description, price) " +
                 "VALUES (:id, :name, :description, :price)");
+            jobParametersBuilder.addDate("start", new Date());
+            jobParametersBuilder.addString("excludeAddress", "false");
 
             JobExecution jobExecution = jobLauncher.run(
                 jobFactory.createComplexJob("complex job"),
@@ -40,6 +44,7 @@ public class ImportServiceImpl implements ImportService {
                 status = jobExecution.getStatus();
                 System.out.println(status);
                 Thread.sleep(1000);
+                // try 3 times if problems exist
             } while (status != BatchStatus.COMPLETED);
 
         } catch (JobExecutionAlreadyRunningException e) {
