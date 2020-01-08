@@ -45,8 +45,8 @@ public class ImportServiceImpl implements ImportService {
                 System.out.println(status);
                 Thread.sleep(1000);
                 // try 3 times if problems exist
+                //jobExecution.stop();
             } while (status != BatchStatus.COMPLETED);
-
         } catch (JobExecutionAlreadyRunningException e) {
             e.printStackTrace();
         } catch (JobRestartException e) {
