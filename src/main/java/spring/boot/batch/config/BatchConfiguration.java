@@ -3,23 +3,13 @@ package spring.boot.batch.config;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
-import org.springframework.batch.item.file.transform.FieldExtractor;
-import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import spring.boot.batch.constants.AppConstants;
 import spring.boot.batch.model.Product;
@@ -28,7 +18,6 @@ import spring.boot.batch.processor.IdentityProcessor;
 import spring.boot.batch.reader.CsvReader;
 import spring.boot.batch.reader.JdbcReader;
 import spring.boot.batch.repository.ProductPagingAndSortingRepository;
-import spring.boot.batch.util.StringHeaderWriter;
 import spring.boot.batch.writer.CsvWriter;
 import spring.boot.batch.writer.JdbcWriter;
 
@@ -92,6 +81,7 @@ public class BatchConfiguration { // rename to StepsConfig
                 .build();
     }
 
+    /*
     @Bean //FIXME Create bean from Factory
     public Job complexJob() { //@Value("#{jobParameters['jobName']}") String jobName
         return jobBuilderFactory.get("complex_job")
@@ -102,4 +92,5 @@ public class BatchConfiguration { // rename to StepsConfig
                 .end()
                 .build();
     }
+    */
 }

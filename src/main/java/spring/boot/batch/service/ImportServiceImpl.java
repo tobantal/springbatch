@@ -1,7 +1,6 @@
 package spring.boot.batch.service;
 
 import org.springframework.batch.core.BatchStatus;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -9,7 +8,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -20,10 +18,7 @@ import spring.boot.batch.job.JobFactory;
 public class ImportServiceImpl implements ImportService {
 
     private final JobLauncher jobLauncher;
-    //private final JobFactory jobFactory;
-
-    @Qualifier("complexJob")
-    private final Job job;
+    private final JobFactory jobFactory;
 
     @Override
     public void start() { // <- JobParameters
@@ -32,10 +27,12 @@ public class ImportServiceImpl implements ImportService {
             jobParametersBuilder.addString("importFile", "import.csv");
             jobParametersBuilder.addString("exportFile", "products-export.csv");
             jobParametersBuilder.addString("jdbcReaderSql", "SELECT * FROM products where product_id >= 3 and product_id <= 10");
-            jobParametersBuilder.addString("jobName", "COMPLEX_JOB");
+            jobParametersBuilder.addString("jdbcWriterSql", "INSERT INTO products " +
+                "(product_id, name, description, price) " +
+                "VALUES (:id, :name, :description, :price)");
 
             JobExecution jobExecution = jobLauncher.run(
-                job, //jobFactory.createComplexJob("complex job"),
+                jobFactory.createComplexJob("complex job"),
                 jobParametersBuilder.toJobParameters());
 
             BatchStatus status;

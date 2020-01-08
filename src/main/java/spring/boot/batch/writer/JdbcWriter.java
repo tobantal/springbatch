@@ -2,21 +2,23 @@ package spring.boot.batch.writer;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import spring.boot.batch.model.Product;
 
+@StepScope
 @Component
 public class JdbcWriter extends JdbcBatchItemWriter<Product> {
 
-    public JdbcWriter(DataSource dataSource) {
+    public JdbcWriter(DataSource dataSource,
+        @Value("#{jobParameters['jdbcWriterSql']}") String sql) {
         setDataSource(dataSource);
         setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>());
-        setSql("INSERT INTO products " +
-                "(product_id, name, description, price) " +
-                "VALUES (:id, :name, :description, :price)");
+        setSql(sql);
     }
 
 }
