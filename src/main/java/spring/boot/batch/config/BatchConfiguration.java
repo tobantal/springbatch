@@ -64,7 +64,7 @@ public class BatchConfiguration { // rename to StepsConfig
                 .reader(csvReader)
                 .processor(identityProcessor)
                 //TODO add listeners
-                .writer(jdbcWriter) //new JdbcBatchItemWriterWrapper(
+                .writer(jdbcWriter) //new JdbcBatchItemWriterWrapper()
                 .build();
     }
 
