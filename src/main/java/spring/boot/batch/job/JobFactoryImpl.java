@@ -26,9 +26,10 @@ public class JobFactoryImpl implements JobFactory {
     public Job createComplexJob(String jobName) {
         return jobBuilderFactory.get(jobName)
                 .incrementer(new RunIdIncrementer())
-                .flow(csvToDbStep)
-                .on(AppConstants.STEP_COMPLETED).to(dbToCsvStep)
-                .on(AppConstants.STEP_FAILED).fail()
+                //.flow(csvToDbStep)
+                //.on(AppConstants.STEP_COMPLETED).to(dbToCsvStep)
+                //.on(AppConstants.STEP_FAILED).fail()
+                .flow(dbToCsvStep)
                 .end()
                 .build();
     }

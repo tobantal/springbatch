@@ -8,7 +8,7 @@ public interface AppConstants {
     String STEP_COMPLETED = "COMPLETED";
     String STEP_FAILED = "FAILED";
 
-    int STEP_CHUNK = 10;
+    int STEP_CHUNK = 10_000;
 
     String[] EXTRACT_FIELDS = new String[] { "id", "name", "description", "price" };
     String DELIMETER = ";";

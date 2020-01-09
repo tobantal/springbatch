@@ -28,7 +28,7 @@ public class ImportServiceImpl implements ImportService {
             JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
             jobParametersBuilder.addString("importFile", "import.csv");
             jobParametersBuilder.addString("exportFile", "products-export.csv");
-            jobParametersBuilder.addString("jdbcReaderSql", "SELECT * FROM products where product_id >= 2 and product_id <= 77");
+            jobParametersBuilder.addString("jdbcReaderSql", "SELECT * FROM products where product_id >= 2 and product_id <= 777777");
             jobParametersBuilder.addString("jdbcWriterSql", "INSERT INTO products " +
                 "(product_id, name, description, price) " +
                 "VALUES (:id, :name, :description, :price)");
@@ -46,6 +46,9 @@ public class ImportServiceImpl implements ImportService {
                 Thread.sleep(1000);
                 // try 3 times if problems exist
                 //jobExecution.stop();
+                if(status == BatchStatus.FAILED) {
+                    break;
+                }
             } while (status != BatchStatus.COMPLETED);
         } catch (JobExecutionAlreadyRunningException e) {
             e.printStackTrace();
