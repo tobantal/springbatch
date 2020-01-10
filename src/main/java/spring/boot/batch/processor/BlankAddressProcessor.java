@@ -5,11 +5,11 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import spring.boot.batch.model.Product;
+import spring.boot.batch.model.KoListMemberView;
 
 @StepScope
 @Component("blankAddressProcessor")
-public class BlankAddressProcessor implements ItemProcessor<Product, Product> {
+public class BlankAddressProcessor implements ItemProcessor<KoListMemberView, KoListMemberView> {
 
     private boolean excludeAddress;
 
@@ -18,11 +18,10 @@ public class BlankAddressProcessor implements ItemProcessor<Product, Product> {
     }
 
 	@Override
-	public Product process(Product item) throws Exception {
+    public KoListMemberView process(KoListMemberView item) throws Exception {
         if(excludeAddress) {
-            item.setDescription(""); //TODO changed to setAddress()
+            item.setKlmAddress("");
         }
-        //TODO may be mapping into new pojo (clone)
 		return item;
 	}
 

@@ -8,8 +8,13 @@ public interface AppConstants {
     String STEP_COMPLETED = "COMPLETED";
     String STEP_FAILED = "FAILED";
 
-    int STEP_CHUNK = 10_000;
+    int STEP_CHUNK = 100_000;
 
-    String[] EXTRACT_FIELDS = new String[] { "id", "name", "description", "price" };
+    // String[] EXTRACT_FIELDS = new String[] { "id", "name", "description", "price"
+    // };
+
+    String[] EXTRACT_FIELDS = new String[] { "klKoFullName", "klKoRegNum", "klmInn", "klmOgrn", "perCurAccKoName",
+            "klmPercent", "klmtName", "perCurAccKoId", "klmResidentValue", "klmCntIso", "klmCntName", "klAcceptDate",
+            "klmAddress" };
     String DELIMETER = ";";
 }

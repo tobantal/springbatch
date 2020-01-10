@@ -29,6 +29,8 @@ build/
 
 ### VS Code ###
 .vscode/
-products-export.csv
 
+application.properties
+products-export.csv
 bin/
+

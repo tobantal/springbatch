@@ -1,22 +1,27 @@
 server:
-    port: 8003
+    port: 8002
 spring:
     batch:
         initialize-schema: always
         job:
             enabled: false
+    #datasource:
+    #    driverClassName: org.h2.Driver
+    #    password: pas
+    #    url: jdbc:h2:mem:testdb
+    #    username: sa
     datasource:
-        driverClassName: org.h2.Driver
-        password: pas
-        url: jdbc:h2:mem:testdb
-        username: sa
-    h2:
-        console:
-            enabled: true
-            path: /h2-console
-            settings:
-                trace: false
-                web-allow-others: false
+        driver-class-name: oracle.jdbc.OracleDriver
+        password: ${DB_USER_PASSWORD}
+        url: jdbc:oracle:thin:@${DB_HOST}:${DB_PORT:1521}:${DB_NAME}
+        username: ${DB_USER}
+    #h2:
+    #    console:
+    #        enabled: true
+    #        path: /h2-console
+     #       settings:
+     #           trace: false
+     #           web-allow-others: false
     jpa:
         hibernate:
             naming:
@@ -25,3 +30,43 @@ spring:
             hibernate:
                 format_sql: true
         show-sql: false
+abac:
+    auth:
+        realm:
+            code: ${ABAC_AUTH_REALM_CODE}
+        url: ${ABAC_AUTH_URL}
+    enabled: ${ABAC_ENABLED:true}
+
+#Actuators configuration
+security:
+    basic:
+        enabled: false
+    oauth2:
+        resource:
+            userInfoUri: https://${SSO_HOST}/blitz/oauth/me
+    user:
+        name: admin
+        password: secret
+
+# Leibniz URLs
+leibniz:
+    meta:
+        url: ${LEIBNIZ_META_URL}
+    search:
+        url: ${LEIBNIZ_SEARCH_URL}
+    update:
+        url: ${LEIBNIZ_UPDATE_URL}
+    code: ${LEIBNIZ_CODE}
+    principal: ${LEIBNIZ_PRINCIPAL}
+    token: ${LEIBNIZ_TOKEN}
+
+# UKO Leibniz search preferences
+uko:
+    leibniz:
+        ko-list-member-v:
+            search:
+                enabled: true
+        search-member:
+            search:
+                enabled: true
+    
