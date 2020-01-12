@@ -10,19 +10,23 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import spring.boot.batch.job.JobFactory;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ImportServiceImpl implements ImportService {
 
     private final JobLauncher jobLauncher;
     private final JobFactory jobFactory;
 
     @Override
+    @Async
     public void start() { // <- JobParameters
         try {
             JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
@@ -47,6 +51,7 @@ public class ImportServiceImpl implements ImportService {
                 // try 3 times if problems exist
                 //jobExecution.stop();
             } while (status != BatchStatus.COMPLETED);
+            log.info("ExportService has been finished");
         } catch (JobExecutionAlreadyRunningException e) {
             e.printStackTrace();
         } catch (JobRestartException e) {

@@ -2,6 +2,7 @@ package spring.boot.batch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
@@ -9,6 +10,9 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import spring.boot.batch.service.ImportService;
 import spring.boot.batch.repository.ProductPagingAndSortingRepository;
@@ -16,7 +20,19 @@ import spring.boot.batch.model.Product;
 
 @EnableBatchProcessing
 @SpringBootApplication
+@EnableAsync
 public class BatchApplication {
+
+     @Bean
+    public Executor taskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(2);
+    executor.setMaxPoolSize(2);
+    executor.setQueueCapacity(500);
+    executor.setThreadNamePrefix("ExportService-");
+    executor.initialize();
+    return executor;
+  }
 
 	public static void main(String[] args) {
         ConfigurableApplicationContext ctx = SpringApplication.run(BatchApplication.class, args);
