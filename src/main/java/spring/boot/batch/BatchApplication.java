@@ -23,10 +23,10 @@ public class BatchApplication {
 
     //generateFakeData(ctx);
 
-    ImportService importService = ctx.getBean(ImportService.class);
-    importService.start();
+    //ImportService importService = ctx.getBean(ImportService.class);
+    //importService.start();
 
-    System.exit(SpringApplication.exit(ctx));
+    //System.exit(SpringApplication.exit(ctx));
     }
 
     private static void generateFakeData(ConfigurableApplicationContext ctx) {
